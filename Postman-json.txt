@@ -1,0 +1,267 @@
+{
+  "info": {
+    "name": "ParaBank Capstone API Suite",
+    "description": "5 API test scenarios covering GET, POST, and negative testing requirements.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TC-API-01: Verify successful customer login (GET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response contains valid customer ID and name\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.customer.id).to.not.be.null;",
+              "    pm.expect(jsonData.customer.firstName).to.eql(\"John\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://parabank.parasoft.com/parabank/services/bank/login/john/demo",
+          "protocol": "https",
+          "host": [
+            "parabank",
+            "parasoft",
+            "com"
+          ],
+          "path": [
+            "parabank",
+            "services",
+            "bank",
+            "login",
+            "john",
+            "demo"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC-API-02: Verify error handling for invalid login (GET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message contains authentication failure warning\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"Could not verify username and password\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://parabank.parasoft.com/parabank/services/bank/login/invalidUser/wrongPass",
+          "protocol": "https",
+          "host": [
+            "parabank",
+            "parasoft",
+            "com"
+          ],
+          "path": [
+            "parabank",
+            "services",
+            "bank",
+            "login",
+            "invalidUser",
+            "wrongPass"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC-API-03: Verify retrieval of customer accounts (GET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is a valid JSON array of accounts\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://parabank.parasoft.com/parabank/services/bank/customers/12212/accounts",
+          "protocol": "https",
+          "host": [
+            "parabank",
+            "parasoft",
+            "com"
+          ],
+          "path": [
+            "parabank",
+            "services",
+            "bank",
+            "customers",
+            "12212",
+            "accounts"
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC-API-04: Verify successful funds transfer (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response confirms successful transfer\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"Successfully transferred\");",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=12345&toAccountId=54321&amount=50",
+          "protocol": "https",
+          "host": [
+            "parabank",
+            "parasoft",
+            "com"
+          ],
+          "path": [
+            "parabank",
+            "services",
+            "bank",
+            "transfer"
+          ],
+          "query": [
+            {
+              "key": "fromAccountId",
+              "value": "12345"
+            },
+            {
+              "key": "toAccountId",
+              "value": "54321"
+            },
+            {
+              "key": "amount",
+              "value": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "TC-API-05: Verify error on transfer with invalid amount format (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://parabank.parasoft.com/parabank/services/bank/transfer?fromAccountId=12345&toAccountId=54321&amount=abc",
+          "protocol": "https",
+          "host": [
+            "parabank",
+            "parasoft",
+            "com"
+          ],
+          "path": [
+            "parabank",
+            "services",
+            "bank",
+            "transfer"
+          ],
+          "query": [
+            {
+              "key": "fromAccountId",
+              "value": "12345"
+            },
+            {
+              "key": "toAccountId",
+              "value": "54321"
+            },
+            {
+              "key": "amount",
+              "value": "abc"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
