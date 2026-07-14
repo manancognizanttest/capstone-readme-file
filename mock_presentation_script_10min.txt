@@ -1,0 +1,244 @@
+PARABANK QA/QE CAPSTONE — PRESENTATION MASTER GUIDE
+Yashwanth Venkatesan and Manan Nayak
+
+PART 1 — TIMED EIGHT-SLIDE SPOKEN SCRIPT
+Hard goal: finish below 10:00
+Target delivery: about 9:10 at a clear, unhurried pace
+
+SLIDE 1 — PARABANK QA/QE CAPSTONE (target 0:50)
+
+[Choose one: Good morning. / Good afternoon.] We are Yashwanth Venkatesan and Manan Nayak, and this is our ParaBank QA and Quality Engineering capstone.
+
+Our theme is evidence-driven testing. A high pass count sounds reassuring, but it is only useful when we can explain what was tested, how it was checked, and where the evidence stops. Today we will show the customer risks we prioritized, how our manual and automated layers worked together, the results and defects we found, and the limits created by a shared demo environment. Our goal is not to claim perfect quality. It is to present a traceable and honest quality assessment.
+
+SLIDE 2 — WHAT WE TESTED (target 1:10)
+
+ParaBank was our primary system. It provides both a browser interface and service endpoints, so we could compare behavior across layers.
+
+We prioritized registration and login because they control identity and access. We covered account overview and opening an account because customers must be able to see and manage their accounts. We also covered transfers and transaction history because money movement carries greater business impact than a cosmetic problem.
+
+At the API layer, ParaBank supplied customer, account, transfer, and transaction workflows. We used JSONPlaceholder only for simulated, nonpersistent PUT and DELETE operations; it was support coverage, not part of ParaBank.
+
+Our accessibility review examined the public login-to-registration flow. It included keyboard use, visible focus, one sampled contrast observation, and programmatic labels. It was not a broad WCAG conformance audit. The hosted environment also limited our control over data resets and shared state.
+
+For cross-browser coverage, we manually ran the valid-login flow in Chrome 149 and Edge 150.
+
+SLIDE 3 — HOW WE TESTED IT (target 1:10)
+
+No single tool answers every quality question, so we used several layers with distinct purposes.
+
+Manual testing gave us broad functional, negative, cross-platform, and accessibility coverage. Postman automated API requests, JavaScript assertions, and chained data, so values such as customer and account IDs could flow into later requests. Selenium WebDriver, Java, JUnit 5, and Page Objects protected repeatable browser journeys while keeping locators separate from test intent.
+
+Cucumber expressed login behavior in business-readable form. Its four executed scenario instances came from one normal valid-login scenario plus a Scenario Outline run with three invalid-login example rows. JMeter added a deliberately small, read-only performance baseline. Accessibility checks added the perspective of people navigating by keyboard or assistive technology.
+
+The value is not the number of tools. Each layer answered a different risk question, and the stored reports made the conclusions auditable.
+
+SLIDE 4 — WHAT WE FOUND (target 1:35)
+
+The reconciled formal set contains 22 cases: 11 API, 6 UI, 2 accessibility, and 3 cross-platform. The recorded outcome is 21 PASS and 1 PARTIAL.
+
+The final Postman Runner completed 11 requests and 24 tests with zero failures or skips. It ran for 4.541 seconds with an average response time of 151 milliseconds.
+
+The UI suite completed five out of five automated methods. There are six formal UI cases because the account-table case, TC-UI-004, was observed inside the valid-login method rather than implemented as a sixth method. Cucumber completed all four scenario instances.
+
+The cross-platform results include manual PASS results in Chrome 149 and Edge 150, plus the recorded smaller-viewport PASS. Separate browser screenshots were not retained.
+
+For accessibility, six keyboard interactions passed and the one sampled contrast ratio was 4.63 to 1. The result is still PARTIAL because the inspected registration fields lacked programmatic labels. Again, this finding applies only to the tested public login-to-registration flow and sampled element, not the whole site.
+
+SLIDE 5 — DEFECTS WE REPORTED (target 1:10)
+
+We documented three defects and kept observed evidence separate from simulation.
+
+DEF-002 is an observed Medium defect. Registration inputs had nearby visible text, but no associated label element or ARIA accessible name. Sighted keyboard users may understand the form, while screen-reader users may encounter textboxes without an accessible name.
+
+DEF-003 is an observed Low defect. A nonnumeric transfer amount returned HTTP 404. The request was rejected and no successful-transfer message appeared, but we propose HTTP 400 as the clearer validation contract. We are not saying the application returned 400.
+
+DEF-001 is a simulated Medium defect in which registration accepts a whitespace-only First Name. It was not executed or observed; it demonstrates a realistic input-validation risk without being presented as product evidence.
+
+That gives two Medium reports and one Low report, but only DEF-002 and DEF-003 are observed findings.
+
+SLIDE 6 — AUTOMATION EVIDENCE (target 1:25)
+
+This slide connects the numbers to visible evidence.
+
+The UI report shows five tests, zero failures, zero errors, and zero skips. The Cucumber report shows four passed scenario instances. The JMeter dashboard shows the preserved historical run: 10 samples, 0 errors, a 226.2 millisecond average, 149 millisecond median, 107 millisecond minimum, 952 millisecond maximum, and about 1.22 requests per second.
+
+The JMeter design used a read-only customer-accounts GET request, five threads, a ten-second ramp-up, and two loops, producing ten samples. This was intentionally small because ParaBank is a shared public demo. Zero errors means all ten samples completed without a recorded error in that run. It does not prove capacity, scalability, production performance, or an SLA.
+
+A separate later verification of the assertion-enhanced plan recorded a 210.9 millisecond average. The screenshot does not prove that later run; it supports the preserved 226.2 millisecond historical run. The final Postman Runner screenshot is now included in the evidence folder. The work-laptop JMeter CLI screenshot remains pending.
+
+SLIDE 7 — WHAT WE LEARNED (target 0:55)
+
+Our biggest engineering challenge was repeatable test data. In a hosted demo, accounts can reset, generated users can collide, and one test can depend on state created earlier. A correct test can therefore become unreliable when setup is unclear.
+
+Next, we would generate unique users, create required accounts through controlled setup, record the identifiers used by each run, and clean up where the environment allows it. We would also preserve final machine-readable reports and screenshots together, retain environment details for Chrome and Edge, and broaden accessibility testing into authenticated pages before making wider claims.
+
+The main lesson was that traceability is part of engineering: every visible total needs a real report, observation, or clearly stated qualification.
+
+SLIDE 8 — CONCLUSION (target 0:55)
+
+To conclude, we exercised high-risk customer journeys through UI and API testing and supported them with repeatable automation, BDD, a small performance baseline, and focused accessibility checks.
+
+The formal record is 21 PASS and 1 PARTIAL. That is a strong result within the tested scope, but the accessibility gap, shared-environment constraints, and limited cross-platform evidence prevent a claim of zero risk or universal quality.
+
+Our final takeaway is simple: credible QA pairs evidence with honest limits. Thank you for your time. We welcome your questions.
+
+TIME CHECK
+Slide 1 0:50 | Slide 2 1:10 | Slide 3 1:10 | Slide 4 1:35
+Slide 5 1:10 | Slide 6 1:25 | Slide 7 0:55 | Slide 8 0:55
+Target total: 9:10. Hard stop: finish before 10:00.
+Verification note: the 1,064 spoken-word count and 9:10 target are verified; a human spoken rehearsal confirming delivery under 10:00 is still required.
+
+
+PART 2 — PRESENTER REFERENCE — NOT PART OF THE TIMED SCRIPT
+
+Use this section to prepare or answer questions. Do not read it during the timed presentation.
+
+COMPACT RESULT CARD
+
+- Formal cases: 22 = 11 API + 6 UI + 2 accessibility + 3 cross-platform.
+- Formal outcomes: 21 PASS, 1 PARTIAL, 0 FAIL, 0 BLOCKED.
+- API automation: 11 requests, 24 passed tests, 0 failed, 0 skipped; 4.541-second duration and 151 ms average response time.
+- UI automation: 5/5 methods, 0 failures, 0 errors, 0 skips; six formal UI cases.
+- BDD: 4/4 executed scenario instances; separate from the 22 formal cases.
+- Accessibility: 1 PASS and 1 PARTIAL; six keyboard interactions passed; sampled contrast 4.63:1.
+- JMeter screenshot-aligned historical run: 10 samples, 0 errors, 226.2 ms average, 149 ms median, 107 ms min, 952 ms max, about 1.22 requests/s.
+- Evidence qualification: Chrome 149 and Edge 150 were manually tested without separate screenshots; the smaller-viewport result also lacks a retained artifact. The review does not establish broad WCAG conformance or production performance.
+
+FORMAL TEST-CASE LOOKUP — EXACTLY 22 ENTRIES
+
+API — 11 cases
+
+1. TC-API-001 — Valid login returns customer ID
+   Tests: valid credentials return HTTP 200 and a usable customer ID. Why: login and chained workflows depend on identity. Result: PASS.
+
+2. TC-API-002 — Invalid login is rejected
+   Tests: invalid credentials do not return a customer ID and produce a failure warning. Why: unauthorized access must fail safely. Result: PASS.
+
+3. TC-API-003 — Get valid customer details
+   Tests: a valid ID returns matching customer and name fields. Why: downstream account operations need correct customer data. Result: PASS.
+
+4. TC-API-004 — Get accounts for a valid customer
+   Tests: a valid customer returns an accounts list. Why: account discovery supplies IDs for later workflows. Result: PASS.
+
+5. TC-API-005 — Create a savings account
+   Tests: valid customer and source-account data create a new savings account. Why: account creation is a core banking journey. Result: PASS. Note: changes shared demo state.
+
+6. TC-API-006 — Transfer funds
+   Tests: a valid source, destination, and amount produce a successful response. Why: money movement is high risk. Result: PASS. Note: the verified run made a $1.00 demo transfer.
+
+7. TC-API-007 — Get account transactions
+   Tests: the chained request returns HTTP 200 and an array. Why: customers need retrievable transaction history. Result: PASS.
+
+8. TC-API-008 — Invalid customer ID is handled safely
+   Tests: a nonexistent customer returns an error and nonempty body. Why: invalid identifiers should produce a clear, controlled failure. Result: PASS; observed HTTP 400.
+
+9. TC-API-009 — Reject a nonnumeric transfer amount
+   Tests: the observed HTTP 404 is returned with no success message. Why: malformed money movement must not succeed. Result: PASS as a characterization. Note: DEF-003 proposes HTTP 400; PASS does not endorse 404.
+
+10. TC-API-010 — Update a JSONPlaceholder post
+    Tests: PUT returns HTTP 200 and echoes the submitted representation. Why: demonstrates update-method assertions. Result: PASS. Note: simulated and nonpersistent; not ParaBank behavior.
+
+11. TC-API-011 — Delete a JSONPlaceholder post
+    Tests: DELETE returns HTTP 200 and an empty object. Why: demonstrates delete-method assertions. Result: PASS. Note: simulated and nonpersistent; not ParaBank behavior.
+
+UI — 6 cases
+
+12. TC-UI-001 — Register a new customer
+    Tests: valid unique data creates an account and displays success. Why: registration is a primary onboarding journey. Result: PASS. Evidence: Selenium screenshot and JUnit method.
+
+13. TC-UI-002 — Log in with valid credentials
+    Tests: valid credentials open Accounts Overview. Why: authenticated access is foundational. Result: PASS. Evidence: Selenium screenshot and JUnit method.
+
+14. TC-UI-003 — Show an error for invalid login
+    Tests: bad credentials display a nonempty error without login. Why: authentication failures must be clear and safe. Result: PASS. Evidence: Selenium screenshot and JUnit method.
+
+15. TC-UI-004 — Display the account-overview table
+    Tests: the authenticated table shows account, balance, and available-amount data. Why: customers must see account information. Result: PASS. Note: observed inside the valid-login method, not a separate sixth method.
+
+16. TC-UI-005 — Open a new savings account
+    Tests: the UI displays confirmation and a new account number. Why: account creation must complete visibly. Result: PASS. Evidence: Selenium screenshot and JUnit method.
+
+17. TC-UI-006 — Transfer funds between accounts
+    Tests: two available accounts support a $1.00 transfer and confirmation. Why: this is a high-impact customer workflow. Result: PASS. Evidence: Selenium screenshot and JUnit method.
+
+ACCESSIBILITY — 2 cases
+
+18. TC-A11Y-001 — Keyboard access to login and primary links
+    Tests: focus reaches key controls in logical order and Enter activates actions. Why: public navigation must work without a mouse. Result: PASS. Note: limited to the tested public flow.
+
+19. TC-A11Y-002 — Registration fields are understandable
+    Tests: keyboard order, visible context, and accessible names. Why: assistive technology must identify each input. Result: PARTIAL. Note: keyboard use and nearby text worked, but inspected fields lacked programmatic labels and appeared as unnamed textboxes.
+
+CROSS-PLATFORM — 3 cases
+
+20. TC-CROSS-001 — Valid login in Chrome
+    Tests: valid login reaches Accounts Overview in Chrome. Why: a primary browser path should work. Result: manual PASS in Chrome 149. Limitation: no separate screenshot was retained.
+
+21. TC-CROSS-002 — Valid login in Edge
+    Tests: valid login reaches the authenticated experience in Edge. Why: the core flow should work across browsers. Result: manual PASS in Edge 150. Limitation: no separate screenshot was retained.
+
+22. TC-CROSS-003 — Transfer page at a smaller viewport
+    Tests: required transfer controls remain visible and usable at 412 by 915. Why: responsive users must be able to complete the flow. Result: recorded PASS. Limitation: no independent artifact.
+
+WHY FIVE UI METHODS BUT SIX UI CASES?
+
+The five JUnit methods automate registration, valid login, invalid login, opening a savings account, and transferring funds. During valid login, the browser also displayed and verified the Accounts Overview table. That observation supports a separate formal requirement, so there are six formal UI cases but only five executable methods. Do not add methods and cases together; they are different counting units.
+
+WHY FOUR BDD SCENARIO INSTANCES?
+
+The feature has one regular valid-login Scenario. Its invalid-login Scenario Outline runs once for each of three Examples rows. One plus three equals four executed instances. These are BDD samples, not four additional formal cases.
+
+JMETER DESIGN AND DASHBOARD GUIDE
+
+Design: one read-only GET for customer accounts; 5 threads; 10-second ramp-up; 2 loops per thread; 10 total samples. The current JMX asserts HTTP 200, an XML content type, and response data containing the `<accounts` root. The small workload protects the shared public demo and provides only an educational baseline.
+
+Dashboard terms in plain language:
+
+- Average: all response times added together and divided by the number of samples.
+- Median: the midpoint of sorted response times, derived from the two middle values for an even sample count; half are at or below it and half are at or above it.
+- Minimum: the fastest recorded response.
+- Maximum: the slowest recorded response.
+- Error rate: the percentage of samples JMeter marked unsuccessful.
+- Throughput: how many requests completed per second during the run.
+- Percentile: the time at or below which a stated percentage of samples completed. In this tiny historical run, the 90th percentile was 876.4 ms and the 95th and 99th were 952 ms; ten samples are too few for stable percentile conclusions.
+
+Historical evidence versus later verification:
+
+- The preserved dashboard screenshot and repository statistics show the historical run: 10 samples, 0 errors, 226.2 ms average, 149 ms median, 107 ms minimum, 952 ms maximum, and about 1.22 requests/s.
+- A separate later assertion-enhanced verification recorded a 210.9 ms average, 128 ms median, 92 ms minimum, 416 ms maximum, and about 1.18 requests/s; all three current assertions passed.
+- Do not say the preserved screenshot proves the later run. It proves the visible historical statistics. The genuine work-laptop CLI screenshot is still pending.
+
+30–45 SECOND DASHBOARD PASSAGE
+
+“This dashboard is the preserved historical JMeter run. First, I point to 10 samples and zero errors: every sample completed without a recorded error. The average was 226.2 milliseconds, while the 149 millisecond median shows that one or more slower responses pulled the average upward. The range was 107 to 952 milliseconds, and throughput was about 1.22 requests per second. Because this was only five threads, two loops, and a read-only request against a shared demo, these numbers are a small baseline—not proof of capacity, scalability, or production performance.”
+
+POSTMAN EVIDENCE NOTE
+
+The final work-laptop Postman Runner completed 11 requests and 24 tests with 24 passed, 0 failed, and 0 skipped. It used one iteration, ran for 4 seconds 541 milliseconds, and reported a 151 millisecond average response time. The genuine Runner summary is saved as `screenshots/api_postman_hybrid_collection_pass.png`.
+
+LIKELY Q&A
+
+Q: Why did Postman replace pytest?
+A: The project team reported that pytest did not work on the intended work laptop, so Postman became the selected alternative. That is user-provided project context, not a conclusion inferred from the execution artifacts.
+
+Q: Why use JSONPlaceholder?
+A: It supplied stable, simulated PUT and DELETE examples. Its writes are nonpersistent and do not represent ParaBank behavior.
+
+Q: Why was the JMeter load so small?
+A: ParaBank is a shared public demo. Five threads and ten read-only samples demonstrated the workflow without creating heavy traffic or changing data.
+
+Q: What does 0% JMeter errors prove?
+A: It proves that JMeter recorded no errors across those ten samples under that run's conditions. It does not prove capacity, concurrency limits, scalability, an SLA, or production readiness.
+
+Q: Why is the formal outcome PARTIAL rather than all PASS?
+A: Keyboard interactions and the sampled contrast check passed, but inspected registration inputs lacked programmatic labels. Preserving PARTIAL accurately represents mixed accessibility evidence.
+
+Q: Why include a simulated defect?
+A: DEF-001 demonstrates a realistic whitespace-only input-validation risk. It is explicitly simulated, Medium severity, and was never executed or presented as observed.
+
+Q: Are 22 formal cases, five UI methods, and four BDD instances the same kind of count?
+A: No. Formal cases are requirements-oriented result records. UI methods are executable JUnit units. BDD instances are one Scenario plus three outline examples. Supporting executions are not added to the 22-case tally.
+
+Q: What evidence is still pending?
+A: Only the genuine work-laptop JMeter CLI screenshot remains pending. The presenter must also complete one spoken rehearsal to confirm delivery under ten minutes.
